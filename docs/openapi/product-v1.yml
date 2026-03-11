@@ -1,0 +1,231 @@
+openapi: 3.0.3
+info:
+  title: Product API
+  description: Mini E-Ticaret - Product servis API sözleşmesi (contract-first)
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+
+tags:
+  - name: Products
+    description: Ürün yönetimi işlemleri
+
+paths:
+  /products:
+    get:
+      tags:
+        - Products
+      summary: Tüm ürünleri listele
+      operationId: getAllProducts
+      responses:
+        "200":
+          description: Ürün listesi başarıyla döndürüldü
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    post:
+      tags:
+        - Products
+      summary: Yeni ürün oluştur
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductRequest"
+      responses:
+        "201":
+          description: Ürün başarıyla oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /products/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Ürün UUID'i
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      tags:
+        - Products
+      summary: ID ile ürün getir
+      operationId: getProductById
+      responses:
+        "200":
+          description: Ürün başarıyla döndürüldü
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    put:
+      tags:
+        - Products
+      summary: Ürünü güncelle
+      operationId: updateProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductRequest"
+      responses:
+        "200":
+          description: Ürün başarıyla güncellendi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      tags:
+        - Products
+      summary: Ürünü sil
+      operationId: deleteProduct
+      responses:
+        "204":
+          description: Ürün başarıyla silindi
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  schemas:
+    ProductRequest:
+      type: object
+      required:
+        - name
+        - price
+        - stock
+        - sku
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          description: Ürün adı (2-255 karakter)
+          example: "Akıllı Telefon X"
+        price:
+          type: number
+          format: decimal
+          minimum: 0
+          exclusiveMinimum: true
+          description: Ürün fiyatı (0'dan büyük)
+          example: 4999.99
+        stock:
+          type: integer
+          minimum: 0
+          description: Stok miktarı (0 veya daha fazla)
+          example: 100
+        sku:
+          type: string
+          description: Benzersiz stok kodu (SKU)
+          example: "SKU-PHONE-X-001"
+
+    ProductResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Ürün benzersiz kimliği
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          description: Ürün adı
+          example: "Akıllı Telefon X"
+        price:
+          type: number
+          format: decimal
+          description: Ürün fiyatı
+          example: 4999.99
+        stock:
+          type: integer
+          description: Stok miktarı
+          example: 100
+        sku:
+          type: string
+          description: Benzersiz stok kodu (SKU)
+          example: "SKU-PHONE-X-001"
+
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-03-11T10:00:00Z"
+        status:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: "Not Found"
+        message:
+          type: string
+          example: "Ürün bulunamadı"
+        path:
+          type: string
+          example: "/api/v1/products/550e8400-e29b-41d4-a716-446655440000"
+
+  responses:
+    BadRequest:
+      description: Geçersiz istek verisi (validasyon hatası)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Kaynak bulunamadı
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Conflict:
+      description: SKU çakışması — bu SKU zaten kayıtlı
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    InternalServerError:
+      description: Sunucu içi hata
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
