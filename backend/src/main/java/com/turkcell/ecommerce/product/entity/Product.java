@@ -1,5 +1,6 @@
 package com.turkcell.ecommerce.product.entity;
 
+import com.turkcell.ecommerce.category.entity.Category;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +10,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "products")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -31,4 +31,15 @@ public class Product {
 
     @Column(nullable = false, unique = true)
     private String sku;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    public void update(String name, BigDecimal price, Integer stock, String sku) {
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
+        this.sku = sku;
+    }
 }

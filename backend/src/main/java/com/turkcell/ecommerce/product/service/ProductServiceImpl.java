@@ -27,45 +27,52 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse getProductById(UUID id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
-        return toResponse(product);
+        return toResponse(findByIdOrThrow(id));
     }
 
     @Override
     public ProductResponse createProduct(ProductRequest request) {
-        if (productRepository.existsBySku(request.getSku())) {
-            throw new SkuAlreadyExistsException(request.getSku());
-        }
-        Product product = Product.builder()
-                .name(request.getName())
-                .price(request.getPrice())
-                .stock(request.getStock())
-                .sku(request.getSku())
-                .build();
-        return toResponse(productRepository.save(product));
+        assertSkuIsUnique(request.getSku());
+        return toResponse(productRepository.save(toEntity(request)));
     }
 
     @Override
     public ProductResponse updateProduct(UUID id, ProductRequest request) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
-        if (productRepository.existsBySkuAndIdNot(request.getSku(), id)) {
-            throw new SkuAlreadyExistsException(request.getSku());
-        }
-        product.setName(request.getName());
-        product.setPrice(request.getPrice());
-        product.setStock(request.getStock());
-        product.setSku(request.getSku());
+        Product product = findByIdOrThrow(id);
+        assertSkuIsUniqueForUpdate(request.getSku(), id);
+        product.update(request.getName(), request.getPrice(), request.getStock(), request.getSku());
         return toResponse(productRepository.save(product));
     }
 
     @Override
     public void deleteProduct(UUID id) {
-        if (!productRepository.existsById(id)) {
-            throw new ProductNotFoundException(id);
+        productRepository.delete(findByIdOrThrow(id));
+    }
+
+    private Product findByIdOrThrow(UUID id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+    }
+
+    private void assertSkuIsUnique(String sku) {
+        if (productRepository.existsBySku(sku)) {
+            throw new SkuAlreadyExistsException(sku);
         }
-        productRepository.deleteById(id);
+    }
+
+    private void assertSkuIsUniqueForUpdate(String sku, UUID id) {
+        if (productRepository.existsBySkuAndIdNot(sku, id)) {
+            throw new SkuAlreadyExistsException(sku);
+        }
+    }
+
+    private Product toEntity(ProductRequest request) {
+        return Product.builder()
+                .name(request.getName())
+                .price(request.getPrice())
+                .stock(request.getStock())
+                .sku(request.getSku())
+                .build();
     }
 
     private ProductResponse toResponse(Product product) {
