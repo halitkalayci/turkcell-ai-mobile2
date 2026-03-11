@@ -1,0 +1,143 @@
+# ===========================================
+# SPRING BOOT / JAVA (backend/)
+# ===========================================
+
+# Compiled class files
+*.class
+
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+.mvn/
+
+# JAR / WAR / EAR
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# STS / Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code (Java)
+.vscode/
+.vscode-server/
+
+# Logs
+*.log
+spring.log
+
+# ===========================================
+# FLUTTER / DART (mobile/)
+# ===========================================
+
+# Dependencies
+mobile/.dart_tool/
+mobile/.packages
+mobile/.pub-cache/
+mobile/.pub/
+mobile/build/
+
+# Android
+mobile/android/.gradle/
+mobile/android/captures/
+mobile/android/gradlew
+mobile/android/gradlew.bat
+mobile/android/local.properties
+mobile/android/GeneratedPluginRegistrant.java
+mobile/android/app/debug/
+mobile/android/app/profile/
+mobile/android/app/release/
+mobile/android/key.properties
+mobile/android/*.jks
+
+# iOS
+mobile/ios/.symlinks/
+mobile/ios/Flutter/flutter_export_environment.sh
+mobile/ios/Flutter/Generated.xcconfig
+mobile/ios/Pods/
+mobile/ios/Podfile.lock
+mobile/ios/.flutter-plugins
+mobile/ios/.flutter-plugins-dependencies
+
+# macOS
+mobile/macos/.symlinks/
+mobile/macos/Flutter/GeneratedPluginRegistrant.swift
+mobile/macos/Pods/
+mobile/macos/Podfile.lock
+
+# Windows
+mobile/windows/flutter/generated_plugin_registrant.cc
+mobile/windows/flutter/generated_plugin_registrant.h
+mobile/windows/flutter/generated_plugins.cmake
+
+# Linux
+mobile/linux/flutter/generated_plugin_registrant.cc
+mobile/linux/flutter/generated_plugin_registrant.h
+mobile/linux/flutter/generated_plugins.cmake
+
+# Web
+mobile/web/
+
+# Flutter / Dart generated files
+mobile/*.g.dart
+mobile/**/*.g.dart
+mobile/*.freezed.dart
+mobile/**/*.freezed.dart
+
+# Flutter coverage
+mobile/coverage/
+
+# ===========================================
+# DOCKER
+# ===========================================
+.env
+.env.*
+!.env.example
+docker-compose.override.yml
+
+# ===========================================
+# OS
+# ===========================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
