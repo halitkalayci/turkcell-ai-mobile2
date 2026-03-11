@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": "echo MERHABA"
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "cd C:\\Users\\PC1\\Desktop\\Projects\\Education\\turkcell-ai-mobile\\backend; mvn clean compile;"
+      }
+    ]
+  }
+}
