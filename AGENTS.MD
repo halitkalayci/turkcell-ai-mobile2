@@ -10,7 +10,7 @@ Mini E-Ticaret Projesi için anayasa görevi gören, temel kuralların tanımlan
 
 - Mobil: Flutter
 
-- Database: PostgreSQL
+- Database: H2 In-Memory
 
 - Diğer ortam teknolojileri `Docker` üzerinde çalıştırılmalıdır.
 
