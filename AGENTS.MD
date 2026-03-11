@@ -73,3 +73,5 @@ Prompta özel çıktıların içerisinde aşağıdaki maddeleri de ekle.
 ### 4.3 Swagger UI
 
 - Tüm servisler Swagger implementasyonu yapmalıdır.
+
+
