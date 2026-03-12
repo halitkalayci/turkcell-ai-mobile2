@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:ecommerce/core/network/app_constants.dart';
 import '../model/category_model.dart';
 
 class CategoryService {
-  static const String _baseUrl = 'http://localhost:8080/api/categories';
-
   Future<List<CategoryModel>> fetchAll() async {
-    final response = await http.get(Uri.parse(_baseUrl));
+    final uri = Uri.parse('${AppConstants.baseUrl}${AppConstants.categoriesPath}');
+    final response = await http.get(uri);
 
     if (response.statusCode != 200) {
       throw Exception('Kategoriler yüklenemedi: ${response.statusCode}');
