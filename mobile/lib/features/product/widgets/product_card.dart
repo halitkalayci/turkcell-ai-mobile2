@@ -22,18 +22,9 @@ class ProductCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              product.name,
+              product.name ?? '',
               style: AppTextStyles.headingSmall.copyWith(
                 color: AppColors.textPrimary,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              product.description,
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -43,12 +34,12 @@ class ProductCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '₺${product.price.toStringAsFixed(2)}',
+                  '₺${(product.price ?? 0.0).toStringAsFixed(2)}',
                   style: AppTextStyles.labelLarge.copyWith(
                     color: AppColors.primary,
                   ),
                 ),
-                _StockBadge(stock: product.stock),
+                _StockBadge(stock: product.stock ?? 0),
               ],
             ),
           ],
