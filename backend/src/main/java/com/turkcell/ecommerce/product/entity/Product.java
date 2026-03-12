@@ -42,4 +42,15 @@ public class Product {
         this.stock = stock;
         this.sku = sku;
     }
+
+    public void decreaseStock(int quantity) {
+        if (this.stock < quantity) {
+            throw new IllegalArgumentException("Yetersiz stok");
+        }
+        this.stock -= quantity;
+    }
+
+    public void increaseStock(int quantity) {
+        this.stock += quantity;
+    }
 }

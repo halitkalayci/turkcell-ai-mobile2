@@ -1,0 +1,234 @@
+openapi: 3.0.3
+info:
+  title: Order API
+  description: Mini E-Ticaret - Order servis API sözleşmesi (contract-first)
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+
+tags:
+  - name: Orders
+    description: Sipariş yönetimi işlemleri
+
+paths:
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: Tüm siparişleri listele
+      operationId: getAllOrders
+      responses:
+        "200":
+          description: Sipariş listesi başarıyla döndürüldü
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    post:
+      tags:
+        - Orders
+      summary: Yeni sipariş oluştur
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderRequest"
+      responses:
+        "201":
+          description: Sipariş başarıyla oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /orders/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Sipariş UUID'i
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      tags:
+        - Orders
+      summary: ID ile sipariş getir
+      operationId: getOrderById
+      responses:
+        "200":
+          description: Sipariş başarıyla döndürüldü
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      tags:
+        - Orders
+      summary: Siparişi sil
+      operationId: deleteOrder
+      responses:
+        "204":
+          description: Sipariş başarıyla silindi
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  schemas:
+    OrderRequest:
+      type: object
+      required:
+        - customerId
+        - items
+      properties:
+        customerId:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Müşteri kimliği (anonim string)
+          example: "customer-001"
+        items:
+          type: array
+          minItems: 1
+          description: Sipariş kalemleri (en az 1 adet)
+          items:
+            $ref: "#/components/schemas/OrderItemRequest"
+
+    OrderItemRequest:
+      type: object
+      required:
+        - productId
+        - quantity
+      properties:
+        productId:
+          type: string
+          format: uuid
+          description: Ürün UUID'i
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        quantity:
+          type: integer
+          minimum: 1
+          description: Sipariş adedi (en az 1)
+          example: 2
+
+    OrderResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Sipariş benzersiz kimliği
+          example: "660e8400-e29b-41d4-a716-446655440000"
+        orderDate:
+          type: string
+          format: date-time
+          description: Sipariş tarihi
+          example: "2026-03-12T10:00:00"
+        customerId:
+          type: string
+          description: Müşteri kimliği
+          example: "customer-001"
+        totalPrice:
+          type: number
+          format: decimal
+          description: Toplam sipariş tutarı (hesaplanmış)
+          example: 9999.98
+        items:
+          type: array
+          description: Sipariş kalemleri
+          items:
+            $ref: "#/components/schemas/OrderItemResponse"
+
+    OrderItemResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Sipariş kalemi benzersiz kimliği
+          example: "770e8400-e29b-41d4-a716-446655440000"
+        productId:
+          type: string
+          format: uuid
+          description: Ürün UUID'i
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        quantity:
+          type: integer
+          description: Sipariş adedi
+          example: 2
+        unitPrice:
+          type: number
+          format: decimal
+          description: Birim fiyat (sipariş anındaki ürün fiyatı)
+          example: 4999.99
+
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-03-12T10:00:00Z"
+        status:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: "Not Found"
+        message:
+          type: string
+          example: "Sipariş bulunamadı"
+        path:
+          type: string
+          example: "/api/v1/orders/660e8400-e29b-41d4-a716-446655440000"
+
+  responses:
+    BadRequest:
+      description: Geçersiz istek verisi (validasyon hatası)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Kaynak bulunamadı
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Conflict:
+      description: Stok yetersizliği — istenen miktar stokta mevcut değil
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    InternalServerError:
+      description: Sunucu içi hata
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"

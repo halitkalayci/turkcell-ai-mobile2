@@ -3,6 +3,7 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/app_colors.dart';
 import 'features/product/screens/product_list_screen.dart';
 import 'features/category/screens/category_list_screen.dart';
+import 'features/order/screens/order_list_screen.dart';
 
 void main() {
   runApp(const EcommerceApp());
@@ -35,6 +36,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   final List<Widget> _screens = const [
     ProductListScreen(),
     CategoryListScreen(),
+    OrderListScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -63,6 +65,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.category),
             label: 'Kategoriler',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.receipt_long),
+            label: 'Siparişler',
           ),
         ],
       ),
