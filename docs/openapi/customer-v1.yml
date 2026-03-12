@@ -1,0 +1,248 @@
+openapi: 3.0.3
+info:
+  title: Customer API
+  description: Mini E-Ticaret - Customer servis API sözleşmesi (contract-first)
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+
+tags:
+  - name: Customers
+    description: Müşteri yönetimi işlemleri
+
+paths:
+  /customers:
+    get:
+      tags:
+        - Customers
+      summary: Tüm müşterileri listele
+      operationId: getAllCustomers
+      responses:
+        "200":
+          description: Müşteri listesi başarıyla döndürüldü
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CustomerResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    post:
+      tags:
+        - Customers
+      summary: Yeni müşteri oluştur
+      operationId: createCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerRequest"
+      responses:
+        "201":
+          description: Müşteri başarıyla oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /customers/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Müşteri UUID'i
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      tags:
+        - Customers
+      summary: ID ile müşteri getir
+      operationId: getCustomerById
+      responses:
+        "200":
+          description: Müşteri başarıyla döndürüldü
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    put:
+      tags:
+        - Customers
+      summary: Müşteriyi güncelle
+      operationId: updateCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerRequest"
+      responses:
+        "200":
+          description: Müşteri başarıyla güncellendi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      tags:
+        - Customers
+      summary: Müşteriyi sil
+      operationId: deleteCustomer
+      responses:
+        "204":
+          description: Müşteri başarıyla silindi
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  schemas:
+    CustomerRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          description: Müşteri adı (2-50 karakter)
+          example: "Ahmet"
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          description: Müşteri soyadı (2-50 karakter)
+          example: "Yılmaz"
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          description: E-posta adresi (benzersiz olmalı)
+          example: "ahmet.yilmaz@example.com"
+        phone:
+          type: string
+          pattern: '^\+?[0-9]{10,15}$'
+          description: Telefon numarası (opsiyonel)
+          example: "+905551234567"
+        address:
+          type: string
+          maxLength: 500
+          description: Adres bilgisi (opsiyonel, maks 500 karakter)
+          example: "Atatürk Cad. No:42, İstanbul"
+
+    CustomerResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Müşteri benzersiz kimliği
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        firstName:
+          type: string
+          description: Müşteri adı
+          example: "Ahmet"
+        lastName:
+          type: string
+          description: Müşteri soyadı
+          example: "Yılmaz"
+        email:
+          type: string
+          format: email
+          description: E-posta adresi
+          example: "ahmet.yilmaz@example.com"
+        phone:
+          type: string
+          description: Telefon numarası
+          example: "+905551234567"
+        address:
+          type: string
+          description: Adres bilgisi
+          example: "Atatürk Cad. No:42, İstanbul"
+        createdAt:
+          type: string
+          format: date-time
+          description: Oluşturulma tarihi
+          example: "2026-03-12T10:00:00"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Son güncelleme tarihi
+          example: "2026-03-12T10:00:00"
+
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-03-12T10:00:00Z"
+        status:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: "Not Found"
+        message:
+          type: string
+          example: "Müşteri bulunamadı"
+        path:
+          type: string
+          example: "/api/v1/customers/550e8400-e29b-41d4-a716-446655440000"
+
+  responses:
+    BadRequest:
+      description: Geçersiz istek verisi (validasyon hatası)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Kaynak bulunamadı
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Conflict:
+      description: E-posta çakışması — bu e-posta adresi zaten kayıtlı
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    InternalServerError:
+      description: Sunucu içi hata
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
