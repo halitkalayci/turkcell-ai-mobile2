@@ -74,4 +74,43 @@ Prompta özel çıktıların içerisinde aşağıdaki maddeleri de ekle.
 
 - Tüm servisler Swagger implementasyonu yapmalıdır.
 
+### 4.4 Flutter Contract-First Model Kuralları
+
+- Flutter model sınıfları (`*Model`) **yalnızca** ilgili OpenAPI `*Response` şemasından türetilir.
+  - `docs/openapi/product-v1.yml` → `ProductResponse` → `ProductModel`
+  - `docs/openapi/category-v1.yml` → `CategoryResponse` → `CategoryModel`
+
+- Model oluşturmadan önce ilgili OpenAPI dosyası **okunmak zorundadır**; spec okunmadan model yazılamaz.
+
+- Spec'te **bulunmayan** alan modele eklenemez. Spec'teki `required` alanların **tamamı** modelde yer almalıdır.
+
+- Alan adları ve Dart tipleri spec ile birebir örtüşmek zorundadır:
+
+  | OpenAPI tipi | Dart tipi |
+  |---|---|
+  | `string` | `String` |
+  | `string / format: uuid` | `String` |
+  | `integer` | `int` |
+  | `number` | `double` |
+  | `boolean` | `bool` |
+  | `array` | `List<T>` |
+
+- Spec'te `required` listesinde **olmayan** alanlar nullable (`String?`, `int?`, ...) tanımlanır.
+
+### 4.5 Flutter Network Sabit Kuralları
+
+- `baseUrl` ve tüm endpoint path sabitleri `lib/core/network/app_constants.dart` içindeki `AppConstants` sınıfında `static const` olarak tanımlanır.
+
+- Servis sınıfları içinde ham URL string (magic string) yazımı **yasaktır**.
+
+- Zorunlu yapı:
+
+  ```dart
+  abstract final class AppConstants {
+    static const String baseUrl = 'http://localhost:8080/api/v1';
+    static const String productsPath = '/products';
+    static const String categoriesPath = '/categories';
+  }
+  ```
+
 
